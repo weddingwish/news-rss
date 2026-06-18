@@ -1,0 +1,75 @@
+# ニュース収集元フィード一覧
+# 各フィードは feedparser で取得。死んでいる(404等)フィードは自動でスキップされ、
+# 実行ログに WARN として残るので、定期的に不要分を削除してください。
+#
+# fields:
+#   name   : 表示名
+#   url    : RSS/Atom/RDF の URL
+#   region : 地域タグ（全国 / 九州 / 関西 / 関東）
+
+feeds:
+  # ---- 全国（プレスリリース）----
+  - { name: "PR TIMES（全国）", url: "https://prtimes.jp/index.rdf", region: "全国" }
+
+  # ---- 九州（みんなの経済新聞ネットワーク）----
+  - { name: "博多経済新聞",   url: "https://hakata.keizai.biz/rss.xml",    region: "九州" }
+  - { name: "天神経済新聞",   url: "https://tenjin.keizai.biz/rss.xml",    region: "九州" }
+  - { name: "小倉経済新聞",   url: "https://kokura.keizai.biz/rss.xml",    region: "九州" }
+  - { name: "佐賀経済新聞",   url: "https://saga.keizai.biz/rss.xml",      region: "九州" }
+  - { name: "熊本経済新聞",   url: "https://kumamoto.keizai.biz/rss.xml",  region: "九州" }
+  - { name: "長崎経済新聞",   url: "https://nagasaki.keizai.biz/rss.xml",  region: "九州" }
+  - { name: "大分経済新聞",   url: "https://oita.keizai.biz/rss.xml",      region: "九州" }
+  - { name: "宮崎経済新聞",   url: "https://miyazaki.keizai.biz/rss.xml",  region: "九州" }
+  - { name: "鹿児島経済新聞", url: "https://kagoshima.keizai.biz/rss.xml", region: "九州" }
+
+  # ---- 関西（みんなの経済新聞ネットワーク）----
+  # ▼九州・関東に集中するため一旦OFF。関西も拾いたくなったら行頭の # を外すだけ。
+  # - { name: "梅田経済新聞",   url: "https://umeda.keizai.biz/rss.xml",     region: "関西" }
+  # - { name: "なんば経済新聞", url: "https://namba.keizai.biz/rss.xml",     region: "関西" }
+  # - { name: "あべの経済新聞", url: "https://abeno.keizai.biz/rss.xml",     region: "関西" }
+  # - { name: "神戸経済新聞",   url: "https://kobe.keizai.biz/rss.xml",      region: "関西" }
+  # - { name: "西宮経済新聞",   url: "https://nishinomiya.keizai.biz/rss.xml", region: "関西" }
+  # - { name: "姫路経済新聞",   url: "https://himeji.keizai.biz/rss.xml",    region: "関西" }
+  # - { name: "奈良経済新聞",   url: "https://nara.keizai.biz/rss.xml",      region: "関西" }
+  # - { name: "和歌山経済新聞", url: "https://wakayama.keizai.biz/rss.xml",  region: "関西" }
+
+  # ---- 関東（みんなの経済新聞ネットワーク）----
+  - { name: "シブヤ経済新聞", url: "https://www.shibukei.com/rss.xml",     region: "関東" }
+  - { name: "新宿経済新聞",   url: "https://shinjuku.keizai.biz/rss.xml",  region: "関東" }
+  - { name: "銀座経済新聞",   url: "https://ginza.keizai.biz/rss.xml",     region: "関東" }
+  - { name: "池袋経済新聞",   url: "https://ikebukuro.keizai.biz/rss.xml", region: "関東" }
+  - { name: "秋葉原経済新聞", url: "https://akiba.keizai.biz/rss.xml",     region: "関東" }
+  - { name: "横浜経済新聞",   url: "https://www.hamakei.com/rss.xml",      region: "関東" }
+  - { name: "川崎経済新聞",   url: "https://kawasaki.keizai.biz/rss.xml",  region: "関東" }
+  - { name: "湘南経済新聞",   url: "https://shonan.keizai.biz/rss.xml",    region: "関東" }
+  - { name: "立川経済新聞",   url: "https://tachikawa.keizai.biz/rss.xml", region: "関東" }
+  - { name: "千葉経済新聞",   url: "https://chiba.keizai.biz/rss.xml",     region: "関東" }
+  - { name: "船橋経済新聞",   url: "https://funabashi.keizai.biz/rss.xml", region: "関東" }
+  - { name: "大宮経済新聞",   url: "https://omiya.keizai.biz/rss.xml",     region: "関東" }
+  - { name: "町田経済新聞",   url: "https://machida.keizai.biz/rss.xml",   region: "関東" }
+  - { name: "吉祥寺経済新聞", url: "https://kichijoji.keizai.biz/rss.xml", region: "関東" }
+
+  # ---- 地元の新規オープン・開店閉店メディア ----
+  # force: shutten = そのフィードの全記事を「新規出店（=営業候補）」として扱う（キーワード漏れ防止）。
+  #   ※新店専用カテゴリのフィードにだけ付ける。開店/閉店混在や総合メディアには付けない。
+  # 九州
+  - { name: "ふくおかナビ NEW OPEN", url: "https://www.fukuoka-navi.jp/category/new-open/feed/",     region: "九州", force: "shutten" }
+  - { name: "号外NET 久留米 開店閉店", url: "https://kurume.goguynet.jp/category/cat_openclose/feed/", region: "九州" }
+  - { name: "号外NET 佐賀 開店閉店",   url: "https://saga.goguynet.jp/category/cat_openclose/feed/",   region: "九州" }
+  - { name: "肥後ジャーナル（熊本）", url: "http://feeds.feedburner.com/higojournal/qhHJ",           region: "九州" }
+  - { name: "ながさーち（長崎）開店閉店", url: "https://nagasaki-search.com/category/open-close/feed/",  region: "九州" }
+  - { name: "号外NET 宮崎 開店閉店",   url: "https://miyazaki.goguynet.jp/category/cat_openclose/feed/",   region: "九州" }
+  - { name: "号外NET 鹿児島 開店閉店", url: "https://kagoshima.goguynet.jp/category/cat_openclose/feed/", region: "九州" }
+  # 山口・広島
+  - { name: "tryangle 山口オープン",  url: "https://tryangle.yamaguchi.jp/tag/new-open/feed/",        region: "山口・広島", force: "shutten" }
+  - { name: "号外NET 広島 開店閉店",   url: "https://hiroshima.goguynet.jp/category/cat_openclose/feed/", region: "山口・広島" }
+
+  # ====== ▼エリア追加はここに1行足すだけ▼ ======
+  # 「みんなの経済新聞ネットワーク」一覧 → https://www.minkei.net/ で対象地域を探し、
+  # 各サイトの「RSS」ページにある rss.xml の URL を貼る。region は自由に命名OK（東海/北海道 等）。
+  # 例:
+  # - { name: "名古屋経済新聞", url: "https://nagoya.keizai.biz/rss.xml", region: "東海" }
+  # - { name: "札幌経済新聞",   url: "https://sapporo.keizai.biz/rss.xml", region: "北海道" }
+  # - { name: "仙台経済新聞",   url: "https://sendai.keizai.biz/rss.xml",  region: "東北" }
+  # PR TIMES 以外のプレスリリース系や業界メディアのRSSも同じ書式で追加できます。
+  # ============================================

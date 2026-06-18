@@ -1,0 +1,12 @@
+# --- 秘密情報は絶対にコミットしない ---
+.env
+.env.*
+!.env.example
+*.key
+secrets.*
+
+# 生成物・キャッシュ
+__pycache__/
+*.pyc
+public/
+.venv/

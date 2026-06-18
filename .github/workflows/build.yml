@@ -1,0 +1,55 @@
+name: build-news-rss
+
+on:
+  schedule:
+    # GitHub Actions は UTC。0:00 UTC = 朝9:00 JST に毎日実行。
+    - cron: "0 0 * * *"
+  workflow_dispatch: {}   # 手動実行ボタンも有効
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時実行を避ける
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: install deps
+        run: pip install -r requirements.txt
+
+      - name: build feeds
+        env:
+          # Pages の公開URL（自分のユーザー名/リポジトリ名に合わせて自動設定）
+          SITE_URL: ${{ format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
+          # AIキーは Secrets から注入。未登録ならキーワードモードで動作（エラーにならない）。
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: python aggregator.py
+
+      - name: post to Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: python slack_notify.py
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
