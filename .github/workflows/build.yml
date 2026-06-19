@@ -2,10 +2,17 @@ name: build-news-rss
 
 on:
   schedule:
-    # GitHub Actions は UTC。0:15 UTC = 朝9:15 JST 狙いで毎日実行。
-    # 正時(0分)は全世界のジョブが集中しスケジュールが遅延・スキップされやすいため15分ずらしている。
-    - cron: "15 0 * * *"
-  workflow_dispatch: {}   # 手動実行ボタンも有効
+    # GitHub Actions は UTC。無料枠の cron は混雑時に遅延・スキップされるため、
+    # 朝に3回リトライして取りこぼしを防ぐ。Slack投稿は下のガードで1日1回だけに制御。
+    - cron: "15 0 * * *"   # 9:15 JST
+    - cron: "45 0 * * *"   # 9:45 JST
+    - cron: "15 1 * * *"   # 10:15 JST
+  workflow_dispatch:
+    inputs:
+      force_slack:
+        description: "重複ガードを無視してSlackに必ず投稿（手動テスト用）"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -41,10 +48,25 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: python aggregator.py
 
-      - name: post to Slack
+      # --- Slack は1日1回だけ投稿（3回リトライしても重複しない）---
+      - name: compute JST date
+        id: jst
+        run: echo "date=$(TZ=Asia/Tokyo date +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: restore daily post marker
+        id: marker
+        uses: actions/cache@v4
+        with:
+          path: .slack-posted
+          key: slack-posted-${{ steps.jst.outputs.date }}
+
+      - name: post to Slack (once per day)
+        if: steps.marker.outputs.cache-hit != 'true' || github.event.inputs.force_slack == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: python slack_notify.py
+        run: |
+          python slack_notify.py
+          echo "$(TZ=Asia/Tokyo date +%FT%T%z)" > .slack-posted
 
       - uses: actions/configure-pages@v5
 
